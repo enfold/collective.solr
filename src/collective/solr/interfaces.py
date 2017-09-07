@@ -59,6 +59,16 @@ class ISolrSchema(Interface):
         )
     )
 
+    send_file = Bool(
+        title=_('label_send_file', default=u'Send File Contents'),
+        default=False,
+        description=_(
+            'help_send_file',
+            default=u'Check to send the contents of a file or image instead '
+                    u'of the path to the blob on the filesystem.'
+        )
+    )
+
     auto_commit = Bool(
         title=_('label_auto_commit', default=u'Automatic commit'),
         default=True,

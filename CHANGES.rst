@@ -7,6 +7,10 @@ Changelog
 - Delay processing of fields to the end when parsing schema.
   [enfold-josh]
 
+- Add the option of sending file contents in the post for extraction instead
+  of the blob filesystem path.
+  [enfold-josh]
+
 
 6.0a2 (2017-07-17)
 ------------------

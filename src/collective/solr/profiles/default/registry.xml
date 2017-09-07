@@ -24,6 +24,7 @@
       <element>portal_type</element>
     </value>
     <value key="boost_script"></value>
+    <value key="send_file">False</value>
   </records>
 
 </registry>

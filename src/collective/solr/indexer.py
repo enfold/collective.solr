@@ -131,22 +131,37 @@ class BinaryAdder(DefaultAdder):
         return path
 
     def __call__(self, conn, **data):
-        postdata = {}
-        path = self.getpath()
-        if path is None:
-            super(BinaryAdder, self).__call__(conn, **data)
-        postdata['stream.file'] = self.getpath()
-        postdata['stream.contentType'] = data.get(
-            'content_type',
-            'application/octet-stream'
-        )
-        postdata['extractFormat'] = 'text'
-        postdata['extractOnly'] = 'true'
+        registry = getUtility(IRegistry)
+        config_send_file = registry['collective.solr.send_file']
+        content_type = data.get(
+                'content_type',
+                'application/octet-stream'
+            )
+        if config_send_file:
+            blob = self.getblob()
+            postdata = blob.open()
+            headers = {
+                'Content-Type': content_type,
+            }
+            url_template = ('%s/update/extract?extractFormat=text'
+                            '&extractOnly=true')
+            url = url_template % conn.solrBase
+        else:
+            postdata = {}
+            path = self.getpath()
+            if path is None:
+                super(BinaryAdder, self).__call__(conn, **data)
+            postdata['stream.file'] = self.getpath()
+            postdata['stream.contentType'] = content_type
+            postdata['extractFormat'] = 'text'
+            postdata['extractOnly'] = 'true'
 
-        url = '%s/update/extract' % conn.solrBase
+            url = '%s/update/extract' % conn.solrBase
+            postdata = urlencode(postdata, doseq=True)
+            headers = conn.formheaders
         try:
             response = conn.doPost(
-                url, urlencode(postdata, doseq=True), conn.formheaders)
+                url, postdata, headers)
             root = etree.parse(response)
             data['SearchableText'] = root.find('.//str').text.strip()
         except SolrConnectionException, e:
