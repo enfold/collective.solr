@@ -4,7 +4,8 @@ Changelog
 6.0a3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Delay processing of fields to the end when parsing schema.
+  [enfold-josh]
 
 
 6.0a2 (2017-07-17)
