@@ -184,24 +184,28 @@ class SolrSchema(AttrDict):
             data = StringIO(data)
         self['requiredFields'] = required = []
         types = {}
+        field_elems = list()
         for action, elem in iterparse(data):
             name = elem.get('name')
             if elem.tag == 'fieldType':
                 types[name] = elem.attrib
             elif elem.tag == 'field':
-                field = SolrField(types[elem.get('type')])
-                field.update(elem.attrib)
-                field['class_'] = field['class']    # `.class` will not work
-                for key, value in field.items():    # convert to `bool`s
-                    if value in ('true', 'false'):
-                        field[key] = value == 'true'
-                self[name] = field
-                if field.get('required', False):
-                    required.append(name)
+                field_elems.append(elem)
             elif elem.tag in ('uniqueKey', 'defaultSearchField'):
                 self[elem.tag] = elem.text
             elif elem.tag == 'solrQueryParser':
                 self[elem.tag] = AttrStr(elem.text, **elem.attrib)
+        for elem in field_elems:
+            name = elem.get('name')
+            field = SolrField(types[elem.get('type')])
+            field.update(elem.attrib)
+            field['class_'] = field['class']    # `.class` will not work
+            for key, value in field.items():    # convert to `bool`s
+                if value in ('true', 'false'):
+                    field[key] = value == 'true'
+            self[name] = field
+            if field.get('required', False):
+                    required.append(name)
 
     @property
     def fields(self):
