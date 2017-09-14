@@ -21,7 +21,7 @@ except ImportError:  # pragma: no cover
 from plone.indexer.interfaces import IIndexableObject
 from zope.component import getUtility
 from plone.registry.interfaces import IRegistry
-
+from plone.app.blob.utils import openBlob
 from collective.solr.interfaces import ISolrConnectionManager
 from collective.solr.interfaces import ISolrIndexQueueProcessor
 from collective.solr.interfaces import ICheckIndexable
@@ -139,7 +139,7 @@ class BinaryAdder(DefaultAdder):
             )
         if config_send_file:
             blob = self.getblob()
-            postdata = blob.open()
+            postdata = openBlob(blob)
             headers = {
                 'Content-Type': content_type,
             }
